@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./public/main.css">
+    <title>Vite App</title>
+</head>
+<body>
+<div id="root-window">
+    <div id="render-target"></div>
+</div>
+
+<script type="module">
+  import { createScene } from './scripts/scene.js';
+
+  window.onload = () => {
+    window.scene = createScene();
+    document.addEventListener('mousedown', window.scene.onMouseDown, false);
+    document.addEventListener('mouseup', window.scene.onMouseUp, false);
+    document.addEventListener('mousemove', window.scene.onMouseMove, false);
+    window.scene.start();
+  };
+</script>
+</body>
+</html>
