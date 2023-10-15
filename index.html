@@ -13,15 +13,10 @@
 </div>
 
 <script type="module">
-  import { createScene } from './scripts/scene.js';
+  import { createGame } from './scripts/game.js';
 
   window.onload = () => {
-    window.addEventListener('contextmenu', e => e.preventDefault());
-    window.scene = createScene();
-    document.addEventListener('mousedown', window.scene.onMouseDown, false);
-    document.addEventListener('mouseup', window.scene.onMouseUp, false);
-    document.addEventListener('mousemove', window.scene.onMouseMove, false);
-    window.scene.start();
+    window.game = createGame();
   };
 </script>
 </body>
