@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createCamera } from './camera.js';
+import { createAssetInstance } from './assets.js';
 
 export function createScene () {
   const gameWindow = document.getElementById('render-target');
@@ -22,11 +23,8 @@ export function createScene () {
     for (let i = 0; i < city.size; i++) {
       const columns = [];
       for (let j = 0; j < city.size; j++) {
-        // Grass geometry
-        const geometry = new THREE.BoxGeometry(1, 1, 1);
-        const material = new THREE.MeshLambertMaterial({color: 0x00aa00});
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(i, -0.5, j);
+        const terrainId = city.data[i][j].terrainId;
+        const mesh = createAssetInstance(terrainId, i, j);
         scene.add(mesh);
         columns.push(mesh);
       }
@@ -40,19 +38,18 @@ export function createScene () {
   function update (city) {
     for (let i = 0; i < city.size; i++) {
       for (let j = 0; j < city.size; j++) {
-        // Building geometry
-        const tile = city.data[i][j];
-        if (tile.building && tile.building.startsWith('building')) {
-          const height = Number(tile.building.slice(-1));
-          const buildingGeometry = new THREE.BoxGeometry(1, height, 1);
-          const buildingMaterial = new THREE.MeshLambertMaterial({color: 0x777777});
-          const buildingMesh = new THREE.Mesh(buildingGeometry, buildingMaterial);
-          buildingMesh.position.set(i, height / 2, j);
-
-          if (buildings[i][j]) scene.remove(buildings[i][j]);
-
-          scene.add(buildingMesh);
-          buildings[i][j] = buildingMesh;
+        const currentBuildingId = buildings[i][j]?.userData.id;
+        const newBuildingId = city.data[i][j].buildingId;
+        // If the player removes a building
+        if (!newBuildingId && currentBuildingId) {
+          scene.remove(buildings[i][j]);
+          buildings[i][j] = undefined;
+        }
+        // If the data model has changed
+        if (newBuildingId !== currentBuildingId) {
+          scene.remove(buildings[i][j]);
+          buildings[i][j] = createAssetInstance(newBuildingId, i, j);
+          scene.add(buildings[i][j]);
         }
       }
     }
