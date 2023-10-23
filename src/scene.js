@@ -52,7 +52,7 @@ export function createScene () {
           buildings[i][j] = undefined;
         }
         // If the data model has changed
-        if (newBuildingId !== currentBuildingId) {
+        if (newBuildingId && newBuildingId !== currentBuildingId) {
           scene.remove(buildings[i][j]);
           buildings[i][j] = createAssetInstance(newBuildingId, i, j);
           scene.add(buildings[i][j]);
