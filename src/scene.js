@@ -13,8 +13,14 @@ export function createScene () {
   renderer.setSize(gameWindow.offsetWidth, gameWindow.offsetHeight);
   gameWindow.appendChild(renderer.domElement);
 
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let selectedObject = undefined;
+
   let terrain = [];
   let buildings = [];
+
+  let onObjectSelected = undefined;
 
   function initialize (city) {
     scene.clear();
@@ -84,6 +90,23 @@ export function createScene () {
 
   function onMouseDown (event) {
     camera.onMouseDown(event);
+
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera.camera);
+
+    let intersections = raycaster.intersectObjects(scene.children, false);
+
+    if (intersections.length > 0) {
+      if (selectedObject) selectedObject.material.emissive.setHex(0);
+      selectedObject = intersections[0].object;
+      selectedObject.material.emissive.setHex(0x555555);
+
+      if (this.onObjectSelected) {
+        this.onObjectSelected(selectedObject);
+      }
+    }
   }
 
   function onMouseUp (event) {
@@ -96,6 +119,6 @@ export function createScene () {
 
 
   return {
-    initialize, update, start, stop, onMouseDown, onMouseUp, onMouseMove,
+    onObjectSelected, initialize, update, start, stop, onMouseDown, onMouseUp, onMouseMove,
   };
 }
